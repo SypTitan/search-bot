@@ -4,8 +4,14 @@ import datetime as dt
 import jsonstorage as storage
 import ah
 
-#dotenv.load_dotenv()
+dotenv.load_dotenv()
 bot_token = os.environ.get('TOKEN')
+run_flask = os.environ.get('RUNFLASK', 'False') == 'True'
+
+if run_flask:
+    import keepalive
+    keepalive.keep_alive()
+    print("Flask server started")
 
 intents = disnake.Intents.default()
 bot = commands.Bot(intents=intents,command_prefix=disnake.ext.commands.when_mentioned)
