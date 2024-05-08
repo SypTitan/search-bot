@@ -6,7 +6,7 @@ from enum import Enum
 
 universal_headers = {'User-Agent': 'Appie/8.22.3','Content-Type': 'application/json'}
 
-class sorts(str, Enum):
+class Sorts(str, Enum):
     Relevance = "RELEVANCE"
     PriceAscending = "PRICELOWHIGH"
     PriceDescending = "PRICEHIGHLOW"
@@ -44,8 +44,8 @@ def get_token() -> tuple[str,int,str]:
 def is_token_expired(token: tuple[str,int,str]) -> bool:
     return dt.datetime.fromtimestamp(token[1]) < dt.datetime.now()
     
-def __get_search_raw(token: str, query: str, sort: str = sorts.Relevance) -> dict:
-    assert(sort in sorts)
+def __get_search_raw(token: str, query: str, sort: str = Sorts.Relevance) -> dict:
+    assert(sort in Sorts)
     if (type(token) != str):
         if(type(token) in [tuple,list] and type(token[0]) == str):
             token = token[0]
@@ -61,7 +61,7 @@ def __get_search_raw(token: str, query: str, sort: str = sorts.Relevance) -> dic
     else:
         raise ConnectionError(search)
     
-def get_search(token: str, query: str, sort: str = sorts.Relevance) -> list:
+def get_search(token: str, query: str, sort: str = Sorts.Relevance) -> list:
     search = __get_search_raw(token, query, sort)
     search = json.loads(search)
     return search['products']
