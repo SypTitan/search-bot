@@ -28,7 +28,7 @@ def jsonify_content():
     return jsonify({'content': content})
 
 def run():
-  app.run(host='0.0.0.0',port=5000)
+  app.run(host='0.0.0.0',port=8000)
 
 def keep_alive():
     t = Thread(target=run)
