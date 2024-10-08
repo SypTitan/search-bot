@@ -22,14 +22,14 @@ async def on_ready():
         
 @bot.slash_command(name="writestorage", description="Writes a value to the storage", guild_ids=[1021316997709049886])
 async def addtostorage(inter: disnake.ApplicationCommandInteraction, key: str, value: str):
-    stored = await storage.read()
+    stored = storage.read()
     stored[key] = value
-    await storage.write(stored)
+    storage.write(stored)
     await inter.response.send_message("Value added to storage")
     
 @bot.slash_command(name="readstorage", description="Reads the entire storage", guild_ids=[1021316997709049886])
 async def readstorage(inter: disnake.ApplicationCommandInteraction):
-    stored = await storage.read()
+    stored = storage.read()
     await inter.response.send_message(stored)
 
 @bot.slash_command(name="appiesearch", description="Searches the AH catalog for an item")
