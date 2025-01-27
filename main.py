@@ -2,7 +2,7 @@ import disnake, dotenv, os, json, io
 from disnake.ext import commands
 import datetime as dt
 import jsonstorage as storage
-import ah, qr
+import ah, qr, httpcat
 
 dotenv.load_dotenv()
 bot_token = os.environ.get('TOKEN')
@@ -14,7 +14,7 @@ if run_flask:
     print("Flask server started")
 
 intents = disnake.Intents.default()
-bot = commands.Bot(intents=intents,command_prefix=disnake.ext.commands.when_mentioned)
+bot = commands.Bot(intents=intents,command_prefix=disnake.ext.commands.when_mentioned, reload=True)
 
 @bot.event
 async def on_ready():
@@ -139,6 +139,32 @@ async def createqr(inter: disnake.ApplicationCommandInteraction, url: str, size:
 
     await inter.followup.send(file=png, embed=embed)
         
+@bot.slash_command(name="httpcat", description="Shows a cat picture explaining a HTTP code")
+@commands.install_types(guild=True, user=True)
+@commands.contexts(guild=True, bot_dm=True, private_channel=True)
+async def fetchhttpcat(inter: disnake.ApplicationCommandInteraction, code: commands.Range[int, 100, 599], private: bool = False):  
+    """Fetches a cat picture explaining a HTTP code
+
+
+    Parameters:
+    ----------
+    code: The HTTP code to look up
+    private: Whether the cat should be sent just to you. Defaults to False.
+    """
+    
+    cat: bytes|str = httpcat.get_cat(code)
+    if (type(cat) == str):
+        await inter.response.send_message(cat, ephemeral=True)
+        return
         
+    await inter.response.defer(ephemeral=private)
+    buffer = io.BytesIO(cat)
+    
+    jpg = disnake.File(buffer, filename=f"httpcat_{code}.jpg", description=f"A cat explaining HTTP code {code}")
+    embed = disnake.Embed(title=f"HTTP code {code}", color=0x179eda)
+    embed.set_image(f"attachment://httpcat_{code}.jpg")
+    
+    await inter.followup.send(file=jpg, embed=embed)
+    
 
 bot.run(bot_token)
