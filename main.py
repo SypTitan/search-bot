@@ -1,8 +1,17 @@
-import disnake, dotenv, os, json, io
-from disnake.ext import commands
 import datetime as dt
+import io
+import json
+import os
+
+import disnake
+import dotenv
+from disnake.ext import commands
+
+import ah
+import httpcat
 import jsonstorage as storage
-import ah, qr, httpcat
+import qr
+import wolfram
 
 dotenv.load_dotenv()
 bot_token = os.environ.get('TOKEN')
@@ -149,7 +158,7 @@ async def fetchhttpcat(inter: disnake.ApplicationCommandInteraction, code: comma
     Parameters:
     ----------
     code: The HTTP code to look up
-    private: Whether the cat should be sent just to you. Defaults to False.
+    private: Whether the cat should be sent just to you
     """
     
     cat: bytes|str = httpcat.get_cat(code)
@@ -166,5 +175,44 @@ async def fetchhttpcat(inter: disnake.ApplicationCommandInteraction, code: comma
     
     await inter.followup.send(file=jpg, embed=embed)
     
+@bot.slash_command(name="wolfram", description="Looks up a query on Wolfram|Alpha")
+@commands.install_types(guild=True, user=True)
+@commands.contexts(guild=True, bot_dm=True, private_channel=True)
+async def wolframquery(inter: disnake.ApplicationCommandInteraction, query: str, private: bool = False):
+    """Looks up a query on Wolfram|Alpha
+
+    Parameters:
+    ----------
+    query: The query to look up
+    private: Whether the response should be sent from just you
+    """
+    
+    await inter.response.defer(ephemeral=private)
+    
+    response = wolfram.get_answer(query)
+    
+    # embed = disnake.Embed(title=query, description=response, color=0xFD7D01)
+    
+    message = f"*{query}* is **{response}**"
+    
+    await inter.followup.send(message)
+    
+    
+# @bot.slash_command(name="upload", description="Uploads a file to the null pointer hoster")
+# @commands.install_types(guild=True, user=True)
+# @commands.contexts(guild=True, bot_dm=True, private_channel=True)
+# async def nullupload(inter: disnake.ApplicationCommandInteraction, file: disnake.Attachment, private: bool = False,  expiry: int = commands.Param(0, gt=0)):
+#     """Uploads a file to the null pointer hoster
+
+#     Parameters
+#     ----------
+#     file: The file you want to upload. Maximum discord file size applies
+#     private: Whether the link should be sent just to you
+#     expiry: The time in hours the link should be valid for
+#     """
+    
+#     print(file.url)
+    
+#     await inter.response.send_message("pong")
 
 bot.run(bot_token)
