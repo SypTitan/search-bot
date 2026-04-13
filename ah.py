@@ -25,7 +25,7 @@ def get_token() -> tuple[str,int,str]:
     stored = storage.read()
     if ('ah_token' in stored):
         if is_token_expired(stored['ah_token']):
-            print("Token expired, fetching new token")
+            #print("Token expired, fetching new token")
             token = __fetch_new_token()
             fixedtoken = list(token)
             fixedtoken[1] = int(fixedtoken[1].timestamp())
